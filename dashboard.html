@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Owner Dashboard - Vehicle Owner Connect</title>
 
   <style>
@@ -30,10 +29,6 @@
       padding: 24px;
       border-radius: 18px;
       box-shadow: 0 8px 30px rgba(0,0,0,.08);
-    }
-
-    h1 {
-      margin-top: 0;
     }
 
     input,
@@ -102,7 +97,7 @@
     .meta {
       color: #667085;
       font-size: 14px;
-      margin-top: 6px;
+      margin-top: 7px;
     }
 
     .message-text {
@@ -112,7 +107,6 @@
 
     .logout {
       background: #b42318;
-      margin-bottom: 20px;
     }
 
     .status-button {
@@ -125,15 +119,11 @@
 
 <div class="container">
 
-  <!-- LOGIN -->
-
   <div id="loginCard" class="card">
 
     <h1>🔐 Owner Login</h1>
 
-    <p>
-      Vehicle Owner Connect
-    </p>
+    <p>Vehicle Owner Connect</p>
 
     <input
       id="email"
@@ -157,8 +147,6 @@
   </div>
 
 
-  <!-- DASHBOARD -->
-
   <div id="dashboard" class="hidden">
 
     <div class="card">
@@ -176,7 +164,9 @@
         Welcome, Somendra Singh
       </p>
 
-      <div id="vehicles"></div>
+      <div id="vehicles">
+        Loading vehicle...
+      </div>
 
     </div>
 
@@ -205,7 +195,6 @@ const SUPABASE_URL =
 
 const SUPABASE_KEY =
   "sb_publishable_IZlTlBdcGcfKQ2RsU_F8yA_1NNv61oq";
-
 
 const supabaseClient =
   window.supabase.createClient(
@@ -236,9 +225,7 @@ const messagesBox =
   document.getElementById("messages");
 
 
-/*
-  LOGIN
-*/
+/* LOGIN */
 
 loginButton.addEventListener(
   "click",
@@ -277,8 +264,8 @@ loginButton.addEventListener(
 
     const { error } =
       await supabaseClient.auth.signInWithPassword({
-        email,
-        password
+        email: email,
+        password: password
       });
 
 
@@ -290,7 +277,7 @@ loginButton.addEventListener(
         "error";
 
       loginStatus.textContent =
-        "Login failed. Please check your email and password.";
+        "Login failed. Check your email and password.";
 
       loginButton.disabled =
         false;
@@ -302,8 +289,7 @@ loginButton.addEventListener(
     }
 
 
-    loginStatus.textContent =
-      "";
+    loginStatus.textContent = "";
 
     await showDashboard();
 
@@ -311,19 +297,13 @@ loginButton.addEventListener(
 );
 
 
-/*
-  SHOW DASHBOARD
-*/
+/* DASHBOARD */
 
 async function showDashboard() {
 
-  loginCard.classList.add(
-    "hidden"
-  );
+  loginCard.classList.add("hidden");
 
-  dashboard.classList.remove(
-    "hidden"
-  );
+  dashboard.classList.remove("hidden");
 
   await loadVehicles();
 
@@ -332,9 +312,7 @@ async function showDashboard() {
 }
 
 
-/*
-  LOAD VEHICLES
-*/
+/* VEHICLES */
 
 async function loadVehicles() {
 
@@ -357,7 +335,7 @@ async function loadVehicles() {
     console.error(error);
 
     vehiclesBox.innerHTML =
-      '<p class="error">Unable to load vehicle information.</p>';
+      '<p class="error">Unable to load vehicle.</p>';
 
     return;
   }
@@ -385,18 +363,15 @@ async function loadVehicles() {
         "vehicle";
 
 
-      box.innerHTML = `
-        <strong>Vehicle:</strong>
-        ${escapeHtml(vehicle.vehicle_number)}
-        <br><br>
-
-        <strong>Owner:</strong>
-        ${escapeHtml(vehicle.owner_name)}
-        <br><br>
-
-        <strong>Status:</strong>
-        ${escapeHtml(vehicle.status)}
-      `;
+      box.innerHTML =
+        "<strong>Vehicle:</strong> " +
+        escapeHtml(vehicle.vehicle_number) +
+        "<br><br>" +
+        "<strong>Owner:</strong> " +
+        escapeHtml(vehicle.owner_name) +
+        "<br><br>" +
+        "<strong>Status:</strong> " +
+        escapeHtml(vehicle.status);
 
 
       vehiclesBox.appendChild(box);
@@ -407,9 +382,7 @@ async function loadVehicles() {
 }
 
 
-/*
-  LOAD MESSAGES
-*/
+/* MESSAGES */
 
 async function loadMessages() {
 
@@ -466,57 +439,59 @@ async function loadMessages() {
         document.createElement("div");
 
 
-      const currentStatus =
+      const status =
         item.status || "new";
 
 
       div.className =
         "message " +
         (
-          currentStatus === "read"
+          status === "read"
             ? "read"
             : "new"
         );
 
 
-      const vehicleNumber =
+      const vehicle =
         item.vehicles
           ? item.vehicles.vehicle_number
           : "Vehicle";
 
 
-      div.innerHTML = `
+      div.innerHTML =
 
-        <strong>
-          🚗 ${escapeHtml(vehicleNumber)}
-        </strong>
+        "<strong>🚗 " +
+        escapeHtml(vehicle) +
+        "</strong>" +
 
-        <div class="meta">
-          From:
-          ${escapeHtml(item.sender_name || "Unknown")}
-        </div>
+        '<div class="meta">From: ' +
+        escapeHtml(
+          item.sender_name || "Unknown"
+        ) +
+        "</div>" +
 
-        <div class="meta">
-          Contact:
-          ${escapeHtml(item.sender_contact || "Not provided")}
-        </div>
+        '<div class="meta">Contact: ' +
+        escapeHtml(
+          item.sender_contact || "Not provided"
+        ) +
+        "</div>" +
 
-        <div class="meta">
-          ${new Date(item.created_at).toLocaleString()}
-        </div>
+        '<div class="meta">' +
+        new Date(
+          item.created_at
+        ).toLocaleString() +
+        "</div>" +
 
-        <div class="message-text">
-          ${escapeHtml(item.message)}
-        </div>
+        '<div class="message-text">' +
+        escapeHtml(item.message) +
+        "</div>" +
 
-        <button
-          class="status-button"
-          onclick="markAsRead('${item.id}')"
-        >
-          Mark as Read
-        </button>
-
-      `;
+        '<button class="status-button" ' +
+        'onclick="markAsRead(\'' +
+        item.id +
+        '\')">' +
+        "Mark as Read" +
+        "</button>";
 
 
       messagesBox.appendChild(div);
@@ -527,9 +502,7 @@ async function loadMessages() {
 }
 
 
-/*
-  MARK MESSAGE READ
-*/
+/* MARK READ */
 
 async function markAsRead(
   messageId
@@ -564,9 +537,7 @@ async function markAsRead(
 }
 
 
-/*
-  LOGOUT
-*/
+/* LOGOUT */
 
 logoutButton.addEventListener(
   "click",
@@ -586,15 +557,11 @@ logoutButton.addEventListener(
 );
 
 
-/*
-  CHECK EXISTING SESSION
-*/
+/* SESSION */
 
 async function checkSession() {
 
-  const {
-    data
-  } =
+  const { data } =
     await supabaseClient.auth.getSession();
 
 
@@ -610,13 +577,9 @@ async function checkSession() {
 }
 
 
-/*
-  HTML ESCAPE
-*/
+/* ESCAPE HTML */
 
-function escapeHtml(
-  value
-) {
+function escapeHtml(value) {
 
   return String(value)
     .replaceAll("&", "&amp;")
