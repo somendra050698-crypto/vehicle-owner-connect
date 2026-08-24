@@ -1,1 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vehicle Owner Connect</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    .container {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .card {
+      background: white;
+      padding: 24px;
+      border-radius: 18px;
+      margin-top: 40px;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    .subtitle {
+      color: #667085;
+    }
+
+    label {
+      display: block;
+      margin-top: 16px;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    input, textarea, button {
+      width: 100%;
+      padding: 13px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    input, textarea {
+      border: 1px solid #d0d5dd;
+    }
+
+    textarea {
+      min-height: 120px;
+      resize: vertical;
+    }
+
+    button {
+      margin-top: 18px;
+      border: 0;
+      background: #172033;
+      color: white;
+      font-weight: bold;
+    }
+
+    .privacy {
+      margin-top: 20px;
+      padding: 14px;
+      background: #eef6ff;
+      border-radius: 10px;
+      font-size: 14px;
+    }
+
+    #status {
+      margin-top: 15px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <div class="card">
+
+      <h1>🚗 Vehicle Owner Connect</h1>
+
+      <p class="subtitle">
+        Contact a vehicle owner privately.
+      </p>
+
+      <div class="privacy">
+        🔐 Owner's personal phone number will not be displayed.
+      </div>
+
+      <h2>Contact Owner</h2>
+
+      <label for="name">Your Name</label>
+      <input id="name" type="text" placeholder="Enter your name">
+
+      <label for="contact">Your Contact</label>
+      <input id="contact" type="text" placeholder="Phone or email">
+
+      <label for="message">Message</label>
+      <textarea id="message" placeholder="Write your message"></textarea>
+
+      <button onclick="sendMessage()">
+        Send Private Message
+      </button>
+
+      <p id="status"></p>
+
+    </div>
+
+  </div>
+
+  <script>
+    function sendMessage() {
+
+      const name = document.getElementById("name").value.trim();
+      const contact = document.getElementById("contact").value.trim();
+      const message = document.getElementById("message").value.trim();
+
+      if (!message) {
+        document.getElementById("status").textContent =
+          "Please write a message.";
+        return;
+      }
+
+      document.getElementById("status").textContent =
+        "Message form is ready. Supabase connection will be added next.";
+    }
+  </script>
+
+</body>
+</html>
