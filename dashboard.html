@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Owner Dashboard - Vehicle Owner Connect</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f4f7fb;
+      color: #172033;
+    }
+
+    .container {
+      max-width: 800px;
+      margin: auto;
+      padding: 20px;
+    }
+
+    .card {
+      background: white;
+      margin-top: 25px;
+      padding: 24px;
+      border-radius: 18px;
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
+    }
+
+    h1 {
+      margin-top: 0;
+    }
+
+    input,
+    button {
+      width: 100%;
+      padding: 13px;
+      margin-top: 10px;
+      border-radius: 10px;
+      font-size: 16px;
+    }
+
+    input {
+      border: 1px solid #d0d5dd;
+    }
+
+    button {
+      border: 0;
+      background: #172033;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    button:disabled {
+      opacity: .6;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .error {
+      color: #b42318;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .success {
+      color: #067647;
+      margin-top: 15px;
+      font-weight: bold;
+    }
+
+    .vehicle {
+      background: #f8fafc;
+      padding: 16px;
+      border-radius: 12px;
+      margin: 15px 0;
+    }
+
+    .message {
+      border: 1px solid #e4e7ec;
+      border-radius: 14px;
+      padding: 18px;
+      margin-top: 15px;
+    }
+
+    .message.new {
+      border-left: 5px solid #067647;
+    }
+
+    .message.read {
+      border-left: 5px solid #98a2b3;
+    }
+
+    .meta {
+      color: #667085;
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .message-text {
+      margin-top: 14px;
+      white-space: pre-wrap;
+    }
+
+    .logout {
+      background: #b42318;
+      margin-bottom: 20px;
+    }
+
+    .status-button {
+      margin-top: 14px;
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <!-- LOGIN -->
+
+  <div id="loginCard" class="card">
+
+    <h1>🔐 Owner Login</h1>
+
+    <p>
+      Vehicle Owner Connect
+    </p>
+
+    <input
+      id="email"
+      type="email"
+      placeholder="Owner email"
+      value="Somendra050698@gmail.com"
+    >
+
+    <input
+      id="password"
+      type="password"
+      placeholder="Password"
+    >
+
+    <button id="loginButton">
+      Login
+    </button>
+
+    <p id="loginStatus"></p>
+
+  </div>
+
+
+  <!-- DASHBOARD -->
+
+  <div id="dashboard" class="hidden">
+
+    <div class="card">
+
+      <button
+        id="logoutButton"
+        class="logout"
+      >
+        Logout
+      </button>
+
+      <h1>📬 Owner Dashboard</h1>
+
+      <p>
+        Welcome, Somendra Singh
+      </p>
+
+      <div id="vehicles"></div>
+
+    </div>
+
+
+    <div class="card">
+
+      <h2>📨 Received Messages</h2>
+
+      <div id="messages">
+        Loading messages...
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+  "https://aythnjldktpqeslkrzyg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_IZlTlBdcGcfKQ2RsU_F8yA_1NNv61oq";
+
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+const loginCard =
+  document.getElementById("loginCard");
+
+const dashboard =
+  document.getElementById("dashboard");
+
+const loginButton =
+  document.getElementById("loginButton");
+
+const logoutButton =
+  document.getElementById("logoutButton");
+
+const loginStatus =
+  document.getElementById("loginStatus");
+
+const vehiclesBox =
+  document.getElementById("vehicles");
+
+const messagesBox =
+  document.getElementById("messages");
+
+
+/*
+  LOGIN
+*/
+
+loginButton.addEventListener(
+  "click",
+  async function () {
+
+    const email =
+      document
+        .getElementById("email")
+        .value
+        .trim();
+
+    const password =
+      document
+        .getElementById("password")
+        .value;
+
+
+    if (!email || !password) {
+
+      loginStatus.className =
+        "error";
+
+      loginStatus.textContent =
+        "Please enter email and password.";
+
+      return;
+    }
+
+
+    loginButton.disabled =
+      true;
+
+    loginButton.textContent =
+      "Logging in...";
+
+
+    const { error } =
+      await supabaseClient.auth.signInWithPassword({
+        email,
+        password
+      });
+
+
+    if (error) {
+
+      console.error(error);
+
+      loginStatus.className =
+        "error";
+
+      loginStatus.textContent =
+        "Login failed. Please check your email and password.";
+
+      loginButton.disabled =
+        false;
+
+      loginButton.textContent =
+        "Login";
+
+      return;
+    }
+
+
+    loginStatus.textContent =
+      "";
+
+    await showDashboard();
+
+  }
+);
+
+
+/*
+  SHOW DASHBOARD
+*/
+
+async function showDashboard() {
+
+  loginCard.classList.add(
+    "hidden"
+  );
+
+  dashboard.classList.remove(
+    "hidden"
+  );
+
+  await loadVehicles();
+
+  await loadMessages();
+
+}
+
+
+/*
+  LOAD VEHICLES
+*/
+
+async function loadVehicles() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("vehicles")
+      .select(
+        "id, vehicle_number, owner_name, status"
+      )
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    vehiclesBox.innerHTML =
+      '<p class="error">Unable to load vehicle information.</p>';
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    vehiclesBox.innerHTML =
+      "<p>No vehicle found.</p>";
+
+    return;
+  }
+
+
+  vehiclesBox.innerHTML = "";
+
+
+  data.forEach(
+    function (vehicle) {
+
+      const box =
+        document.createElement("div");
+
+      box.className =
+        "vehicle";
+
+
+      box.innerHTML = `
+        <strong>Vehicle:</strong>
+        ${escapeHtml(vehicle.vehicle_number)}
+        <br><br>
+
+        <strong>Owner:</strong>
+        ${escapeHtml(vehicle.owner_name)}
+        <br><br>
+
+        <strong>Status:</strong>
+        ${escapeHtml(vehicle.status)}
+      `;
+
+
+      vehiclesBox.appendChild(box);
+
+    }
+  );
+
+}
+
+
+/*
+  LOAD MESSAGES
+*/
+
+async function loadMessages() {
+
+  const { data, error } =
+    await supabaseClient
+      .from("vehicle_messages")
+      .select(`
+        id,
+        vehicle_id,
+        sender_name,
+        sender_contact,
+        message,
+        status,
+        created_at,
+        vehicles (
+          vehicle_number
+        )
+      `)
+      .order(
+        "created_at",
+        {
+          ascending: false
+        }
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    messagesBox.innerHTML =
+      '<p class="error">Unable to load messages.</p>';
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    messagesBox.innerHTML =
+      "<p>No messages received yet.</p>";
+
+    return;
+  }
+
+
+  messagesBox.innerHTML = "";
+
+
+  data.forEach(
+    function (item) {
+
+      const div =
+        document.createElement("div");
+
+
+      const currentStatus =
+        item.status || "new";
+
+
+      div.className =
+        "message " +
+        (
+          currentStatus === "read"
+            ? "read"
+            : "new"
+        );
+
+
+      const vehicleNumber =
+        item.vehicles
+          ? item.vehicles.vehicle_number
+          : "Vehicle";
+
+
+      div.innerHTML = `
+
+        <strong>
+          🚗 ${escapeHtml(vehicleNumber)}
+        </strong>
+
+        <div class="meta">
+          From:
+          ${escapeHtml(item.sender_name || "Unknown")}
+        </div>
+
+        <div class="meta">
+          Contact:
+          ${escapeHtml(item.sender_contact || "Not provided")}
+        </div>
+
+        <div class="meta">
+          ${new Date(item.created_at).toLocaleString()}
+        </div>
+
+        <div class="message-text">
+          ${escapeHtml(item.message)}
+        </div>
+
+        <button
+          class="status-button"
+          onclick="markAsRead('${item.id}')"
+        >
+          Mark as Read
+        </button>
+
+      `;
+
+
+      messagesBox.appendChild(div);
+
+    }
+  );
+
+}
+
+
+/*
+  MARK MESSAGE READ
+*/
+
+async function markAsRead(
+  messageId
+) {
+
+  const { error } =
+    await supabaseClient
+      .from("vehicle_messages")
+      .update({
+        status: "read"
+      })
+      .eq(
+        "id",
+        messageId
+      );
+
+
+  if (error) {
+
+    console.error(error);
+
+    alert(
+      "Unable to update message."
+    );
+
+    return;
+  }
+
+
+  await loadMessages();
+
+}
+
+
+/*
+  LOGOUT
+*/
+
+logoutButton.addEventListener(
+  "click",
+  async function () {
+
+    await supabaseClient.auth.signOut();
+
+    dashboard.classList.add(
+      "hidden"
+    );
+
+    loginCard.classList.remove(
+      "hidden"
+    );
+
+  }
+);
+
+
+/*
+  CHECK EXISTING SESSION
+*/
+
+async function checkSession() {
+
+  const {
+    data
+  } =
+    await supabaseClient.auth.getSession();
+
+
+  if (
+    data &&
+    data.session
+  ) {
+
+    await showDashboard();
+
+  }
+
+}
+
+
+/*
+  HTML ESCAPE
+*/
+
+function escapeHtml(
+  value
+) {
+
+  return String(value)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+
+}
+
+
+checkSession();
+
+</script>
+
+</body>
+</html>
