@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Vehicle Owner Connect</title>
 
   <style>
@@ -29,7 +28,7 @@
       margin-top: 30px;
       padding: 24px;
       border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.08);
+      box-shadow: 0 8px 30px rgba(0,0,0,.08);
     }
 
     h1 {
@@ -91,36 +90,27 @@
     }
 
     button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
+      opacity: .6;
     }
 
-    #loading {
-      text-align: center;
-      padding: 20px;
+    .hidden {
+      display: none;
     }
 
-    #error {
+    .error {
       color: #b42318;
-      margin-top: 15px;
-      font-weight: bold;
-    }
-
-    #status {
       margin-top: 15px;
       font-weight: bold;
     }
 
     .success {
       color: #067647;
+      margin-top: 15px;
+      font-weight: bold;
     }
 
-    .error {
-      color: #b42318;
-    }
-
-    .hidden {
-      display: none;
+    #loading {
+      padding: 20px 0;
     }
   </style>
 </head>
@@ -146,16 +136,19 @@
     <div id="vehicleSection" class="hidden">
 
       <div class="vehicle-box">
+
         <strong>Vehicle Number:</strong>
         <span id="vehicleNumber"></span>
+
         <br><br>
 
         <strong>Owner:</strong>
         <span id="ownerName"></span>
+
       </div>
 
       <div class="privacy">
-        🔐 The owner's phone number and WhatsApp number
+        🔐 Owner's phone number and WhatsApp number
         are never displayed publicly.
       </div>
 
@@ -198,3 +191,282 @@
       </button>
 
       <p id="status"></p>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+
+const SUPABASE_URL =
+  "https://aythnjldktpqeslkrzyg.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_IZlTlBdcGcfKQ2RsU_F8yA_1NNv61oq";
+
+const supabaseClient =
+  window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+  );
+
+
+const params =
+  new URLSearchParams(
+    window.location.search
+  );
+
+const qrToken =
+  params.get("token");
+
+
+let vehicleId = null;
+
+
+const loading =
+  document.getElementById("loading");
+
+const errorBox =
+  document.getElementById("error");
+
+const vehicleSection =
+  document.getElementById("vehicleSection");
+
+const vehicleNumber =
+  document.getElementById("vehicleNumber");
+
+const ownerName =
+  document.getElementById("ownerName");
+
+const sendButton =
+  document.getElementById("sendButton");
+
+const statusBox =
+  document.getElementById("status");
+
+
+/*
+  LOAD VEHICLE THROUGH
+  SECURE SUPABASE FUNCTION
+*/
+
+async function loadVehicle() {
+
+  if (!qrToken) {
+
+    loading.classList.add("hidden");
+
+    errorBox.textContent =
+      "Invalid QR link. Please scan the vehicle QR code again.";
+
+    return;
+  }
+
+
+  const { data, error } =
+    await supabaseClient.rpc(
+      "get_vehicle_by_qr_token",
+      {
+        p_qr_token: qrToken
+      }
+    );
+
+
+  loading.classList.add("hidden");
+
+
+  if (error) {
+
+    console.error(error);
+
+    errorBox.textContent =
+      "Unable to load vehicle information.";
+
+    return;
+  }
+
+
+  if (!data || data.length === 0) {
+
+    errorBox.textContent =
+      "Vehicle not found or inactive.";
+
+    return;
+  }
+
+
+  const vehicle =
+    data[0];
+
+
+  vehicleId =
+    vehicle.vehicle_id;
+
+
+  vehicleNumber.textContent =
+    vehicle.vehicle_number;
+
+
+  ownerName.textContent =
+    vehicle.owner_name;
+
+
+  vehicleSection.classList.remove(
+    "hidden"
+  );
+}
+
+
+/*
+  SEND PRIVATE MESSAGE
+*/
+
+sendButton.addEventListener(
+  "click",
+  async function () {
+
+    if (!vehicleId) {
+
+      statusBox.className =
+        "error";
+
+      statusBox.textContent =
+        "Vehicle information is not available.";
+
+      return;
+    }
+
+
+    const senderName =
+      document
+        .getElementById("senderName")
+        .value
+        .trim();
+
+
+    const senderContact =
+      document
+        .getElementById("senderContact")
+        .value
+        .trim();
+
+
+    const message =
+      document
+        .getElementById("message")
+        .value
+        .trim();
+
+
+    if (!message) {
+
+      statusBox.className =
+        "error";
+
+      statusBox.textContent =
+        "Please write a message.";
+
+      return;
+    }
+
+
+    sendButton.disabled =
+      true;
+
+    sendButton.textContent =
+      "Sending...";
+
+
+    statusBox.className = "";
+
+    statusBox.textContent =
+      "Sending your message...";
+
+
+    const { error } =
+      await supabaseClient
+        .from("vehicle_messages")
+        .insert({
+
+          vehicle_id:
+            vehicleId,
+
+          sender_name:
+            senderName || null,
+
+          sender_contact:
+            senderContact || null,
+
+          message:
+            message
+
+        });
+
+
+    if (error) {
+
+      console.error(error);
+
+      statusBox.className =
+        "error";
+
+      statusBox.textContent =
+        "Message could not be sent.";
+
+      sendButton.disabled =
+        false;
+
+      sendButton.textContent =
+        "Send Private Message";
+
+      return;
+    }
+
+
+    statusBox.className =
+      "success";
+
+    statusBox.textContent =
+      "✅ Message sent successfully.";
+
+
+    document
+      .getElementById("senderName")
+      .value = "";
+
+
+    document
+      .getElementById("senderContact")
+      .value = "";
+
+
+    document
+      .getElementById("message")
+      .value = "";
+
+
+    sendButton.disabled =
+      false;
+
+    sendButton.textContent =
+      "Send Private Message";
+
+  }
+);
+
+
+/*
+  START WEBSITE
+*/
+
+loadVehicle();
+
+</script>
+
+</body>
+</html>
