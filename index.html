@@ -118,7 +118,6 @@
 <body>
 
 <div class="container">
-
   <div class="card">
 
     <h1>🚗 Vehicle Owner Connect</h1>
@@ -154,9 +153,7 @@
 
       <h2>Contact Owner</h2>
 
-      <label for="senderName">
-        Your Name
-      </label>
+      <label for="senderName">Your Name</label>
 
       <input
         id="senderName"
@@ -176,9 +173,7 @@
         maxlength="150"
       >
 
-      <label for="message">
-        Message
-      </label>
+      <label for="message">Message</label>
 
       <textarea
         id="message"
@@ -195,9 +190,7 @@
     </div>
 
   </div>
-
 </div>
-
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
@@ -250,16 +243,13 @@ const statusBox =
   document.getElementById("status");
 
 
-/*
-  LOAD VEHICLE THROUGH
-  SECURE SUPABASE FUNCTION
-*/
-
 async function loadVehicle() {
 
   if (!qrToken) {
 
     loading.classList.add("hidden");
+
+    errorBox.className = "error";
 
     errorBox.textContent =
       "Invalid QR link. Please scan the vehicle QR code again.";
@@ -284,6 +274,8 @@ async function loadVehicle() {
 
     console.error(error);
 
+    errorBox.className = "error";
+
     errorBox.textContent =
       "Unable to load vehicle information.";
 
@@ -292,6 +284,8 @@ async function loadVehicle() {
 
 
   if (!data || data.length === 0) {
+
+    errorBox.className = "error";
 
     errorBox.textContent =
       "Vehicle not found or inactive.";
@@ -321,10 +315,6 @@ async function loadVehicle() {
   );
 }
 
-
-/*
-  SEND PRIVATE MESSAGE
-*/
 
 sendButton.addEventListener(
   "click",
@@ -388,24 +378,19 @@ sendButton.addEventListener(
       "Sending your message...";
 
 
-    const { error } =
-      await supabaseClient
-        .from("vehicle_messages")
-        .insert({
-
-          vehicle_id:
-            vehicleId,
-
-          sender_name:
+    const { data, error } =
+      await supabaseClient.rpc(
+        "send_vehicle_message",
+        {
+          p_vehicle_id: vehicleId,
+          p_sender_name:
             senderName || null,
-
-          sender_contact:
+          p_sender_contact:
             senderContact || null,
-
-          message:
+          p_message:
             message
-
-        });
+        }
+      );
 
 
     if (error) {
@@ -459,10 +444,6 @@ sendButton.addEventListener(
   }
 );
 
-
-/*
-  START WEBSITE
-*/
 
 loadVehicle();
 
