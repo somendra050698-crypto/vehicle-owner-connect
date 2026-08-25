@@ -1,219 +1,226 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Owner Dashboard - Vehicle Owner Connect</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-  <style>
-    * {
-      box-sizing: border-box;
-    }
+<title>Owner Dashboard - Vehicle Owner Connect</title>
 
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f4f7fb;
-      color: #172033;
-    }
+<style>
+*{
+  box-sizing:border-box;
+}
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 20px;
-    }
+body{
+  margin:0;
+  font-family:Arial,sans-serif;
+  background:#f4f7fb;
+  color:#172033;
+}
 
-    .card {
-      background: white;
-      margin-top: 25px;
-      padding: 24px;
-      border-radius: 18px;
-      box-shadow: 0 8px 30px rgba(0,0,0,.08);
-    }
+.container{
+  max-width:800px;
+  margin:auto;
+  padding:20px;
+}
 
-    input,
-    button {
-      width: 100%;
-      padding: 13px;
-      margin-top: 10px;
-      border-radius: 10px;
-      font-size: 16px;
-    }
+.card{
+  background:white;
+  margin-top:25px;
+  padding:24px;
+  border-radius:18px;
+  box-shadow:0 8px 30px rgba(0,0,0,.08);
+}
 
-    input {
-      border: 1px solid #d0d5dd;
-    }
+input,button{
+  width:100%;
+  padding:13px;
+  margin-top:10px;
+  border-radius:10px;
+  font-size:16px;
+}
 
-    button {
-      border: 0;
-      background: #172033;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
+input{
+  border:1px solid #d0d5dd;
+}
 
-    button:disabled {
-      opacity: .6;
-    }
+button{
+  border:0;
+  background:#172033;
+  color:white;
+  font-weight:bold;
+  cursor:pointer;
+}
 
-    .hidden {
-      display: none;
-    }
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
 
-    .error {
-      color: #b42318;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+.hidden{
+  display:none;
+}
 
-    .success {
-      color: #067647;
-      margin-top: 15px;
-      font-weight: bold;
-    }
+.error{
+  color:#b42318;
+  margin-top:15px;
+  font-weight:bold;
+}
 
-    .vehicle {
-      background: #f8fafc;
-      padding: 16px;
-      border-radius: 12px;
-      margin: 15px 0;
-    }
+.success{
+  color:#067647;
+  margin-top:15px;
+  font-weight:bold;
+}
 
-    .message {
-      border: 1px solid #e4e7ec;
-      border-radius: 14px;
-      padding: 18px;
-      margin-top: 15px;
-    }
+.vehicle{
+  background:#f8fafc;
+  padding:16px;
+  border-radius:12px;
+  margin:15px 0;
+}
 
-    .message.new {
-      border-left: 5px solid #067647;
-    }
+.message{
+  border:1px solid #e4e7ec;
+  border-radius:14px;
+  padding:18px;
+  margin-top:15px;
+}
 
-    .message.read {
-      border-left: 5px solid #98a2b3;
-    }
+.message.new{
+  border-left:5px solid #067647;
+}
 
-    .meta {
-      color: #667085;
-      font-size: 14px;
-      margin-top: 7px;
-    }
+.message.read{
+  border-left:5px solid #98a2b3;
+  opacity:.85;
+}
 
-    .message-text {
-      margin-top: 14px;
-      white-space: pre-wrap;
-    }
+.meta{
+  color:#667085;
+  font-size:14px;
+  margin-top:7px;
+}
 
-    .logout {
-      background: #b42318;
-    }
+.message-text{
+  margin-top:14px;
+  white-space:pre-wrap;
+}
 
-    .status-button {
-      margin-top: 14px;
-    }
+.logout{
+  background:#b42318;
+}
 
-    .qr-box {
-      margin-top: 18px;
-      padding: 18px;
-      background: white;
-      border: 1px solid #e4e7ec;
-      border-radius: 14px;
-      text-align: center;
-    }
+.status-button{
+  margin-top:14px;
+}
 
-    .qr-image {
-      width: 220px;
-      max-width: 100%;
-      height: auto;
-      margin: 15px auto;
-      display: block;
-    }
+.read-button{
+  background:#98a2b3;
+}
 
-    .qr-url {
-      font-size: 12px;
-      color: #667085;
-      word-break: break-all;
-      margin-top: 10px;
-    }
+.qr-button{
+  background:#067647;
+}
 
-    .qr-button {
-      background: #067647;
-    }
+.qr-box{
+  margin-top:18px;
+  padding:18px;
+  border:1px solid #e4e7ec;
+  border-radius:14px;
+  text-align:center;
+  background:white;
+}
 
-    .print-button {
-      background: #344054;
-    }
-  </style>
+.qr-image{
+  width:220px;
+  max-width:100%;
+  display:block;
+  margin:15px auto;
+}
+
+.qr-url{
+  font-size:12px;
+  color:#667085;
+  word-break:break-all;
+}
+
+.print-button{
+  background:#344054;
+}
+</style>
 </head>
 
 <body>
 
 <div class="container">
 
-  <div id="loginCard" class="card">
+<!-- LOGIN -->
 
-    <h1>🔐 Owner Login</h1>
+<div id="loginCard" class="card">
 
-    <p>Vehicle Owner Connect</p>
+<h1>🔐 Owner Login</h1>
 
-    <input
-      id="email"
-      type="email"
-      placeholder="Owner email"
-      value="Somendra050698@gmail.com"
-    >
+<p>Vehicle Owner Connect</p>
 
-    <input
-      id="password"
-      type="password"
-      placeholder="Password"
-    >
+<input
+id="email"
+type="email"
+placeholder="Owner email"
+value="Somendra050698@gmail.com"
+>
 
-    <button id="loginButton">
-      Login
-    </button>
+<input
+id="password"
+type="password"
+placeholder="Password"
+>
 
-    <p id="loginStatus"></p>
+<button id="loginButton">
+Login
+</button>
 
-  </div>
+<p id="loginStatus"></p>
 
-
-  <div id="dashboard" class="hidden">
-
-    <div class="card">
-
-      <button
-        id="logoutButton"
-        class="logout"
-      >
-        Logout
-      </button>
-
-      <h1>📬 Owner Dashboard</h1>
-
-      <p>
-        Welcome, Somendra Singh
-      </p>
-
-      <div id="vehicles">
-        Loading vehicle...
-      </div>
-
-    </div>
+</div>
 
 
-    <div class="card">
+<!-- DASHBOARD -->
 
-      <h2>📨 Received Messages</h2>
+<div id="dashboard" class="hidden">
 
-      <div id="messages">
-        Loading messages...
-      </div>
+<div class="card">
 
-    </div>
+<button
+id="logoutButton"
+class="logout">
+Logout
+</button>
 
-  </div>
+<h1>📬 Owner Dashboard</h1>
+
+<p>
+Welcome, Somendra Singh
+</p>
+
+<div id="vehicles">
+Loading vehicle...
+</div>
+
+</div>
+
+
+<div class="card">
+
+<h2>📨 Received Messages</h2>
+
+<div id="messages">
+Loading messages...
+</div>
+
+</div>
+
+</div>
 
 </div>
 
@@ -223,691 +230,526 @@
 <script>
 
 const SUPABASE_URL =
-  "https://aythnjldktpqeslkrzyg.supabase.co";
+"https://aythnjldktpqeslkrzyg.supabase.co";
 
 const SUPABASE_KEY =
-  "sb_publishable_IZlTlBdcGcfKQ2RsU_F8yA_1NNv61oq";
+"sb_publishable_IZlTlBdcGcfKQ2RsU_F8yA_1NNv61oq";
 
 const supabaseClient =
-  window.supabase.createClient(
-    SUPABASE_URL,
-    SUPABASE_KEY
-  );
+window.supabase.createClient(
+SUPABASE_URL,
+SUPABASE_KEY
+);
 
 
 const loginCard =
-  document.getElementById("loginCard");
+document.getElementById("loginCard");
 
 const dashboard =
-  document.getElementById("dashboard");
+document.getElementById("dashboard");
 
 const loginButton =
-  document.getElementById("loginButton");
+document.getElementById("loginButton");
 
 const logoutButton =
-  document.getElementById("logoutButton");
+document.getElementById("logoutButton");
 
 const loginStatus =
-  document.getElementById("loginStatus");
+document.getElementById("loginStatus");
 
 const vehiclesBox =
-  document.getElementById("vehicles");
+document.getElementById("vehicles");
 
 const messagesBox =
-  document.getElementById("messages");
+document.getElementById("messages");
 
 
 /* LOGIN */
 
 loginButton.addEventListener(
-  "click",
-  async function () {
+"click",
+async function(){
 
-    const email =
-      document
-        .getElementById("email")
-        .value
-        .trim();
+const email =
+document.getElementById("email")
+.value
+.trim();
 
-    const password =
-      document
-        .getElementById("password")
-        .value;
+const password =
+document.getElementById("password")
+.value;
 
+if(!email || !password){
 
-    if (!email || !password) {
+loginStatus.className="error";
 
-      loginStatus.className =
-        "error";
+loginStatus.textContent =
+"Please enter email and password.";
 
-      loginStatus.textContent =
-        "Please enter email and password.";
+return;
+}
 
-      return;
-    }
+loginButton.disabled=true;
 
-
-    loginButton.disabled =
-      true;
-
-    loginButton.textContent =
-      "Logging in...";
+loginButton.textContent="Logging in...";
 
 
-    const { error } =
-      await supabaseClient.auth.signInWithPassword({
-        email: email,
-        password: password
-      });
+const {error} =
+await supabaseClient.auth
+.signInWithPassword({
+email:email,
+password:password
+});
 
 
-    if (error) {
+if(error){
 
-      console.error(error);
+console.error(error);
 
-      loginStatus.className =
-        "error";
+loginStatus.className="error";
 
-      loginStatus.textContent =
-        "Login failed. Check your email and password.";
+loginStatus.textContent =
+"Login failed. Check your email and password.";
 
-      loginButton.disabled =
-        false;
+loginButton.disabled=false;
 
-      loginButton.textContent =
-        "Login";
+loginButton.textContent="Login";
 
-      return;
-    }
+return;
+}
+
+loginStatus.textContent="";
+
+loginButton.disabled=false;
+
+loginButton.textContent="Login";
+
+await showDashboard();
+
+});
 
 
-    loginStatus.textContent = "";
+/* SHOW DASHBOARD */
 
-    loginButton.disabled =
-      false;
+async function showDashboard(){
 
-    loginButton.textContent =
-      "Login";
+loginCard.classList.add("hidden");
 
-    await showDashboard();
+dashboard.classList.remove("hidden");
 
-  }
+await loadVehicles();
+
+await loadMessages();
+
+}
+
+
+/* LOAD VEHICLES */
+
+async function loadVehicles(){
+
+const {data,error} =
+await supabaseClient
+.from("vehicles")
+.select(
+"id,vehicle_number,owner_name,status,qr_token"
+)
+.order(
+"created_at",
+{ascending:false}
 );
 
 
-/* DASHBOARD */
+if(error){
 
-async function showDashboard() {
+console.error(error);
 
-  loginCard.classList.add("hidden");
+vehiclesBox.innerHTML =
+'<p class="error">Unable to load vehicle.</p>';
 
-  dashboard.classList.remove("hidden");
+return;
+}
 
-  await loadVehicles();
 
-  await loadMessages();
+if(!data || data.length===0){
+
+vehiclesBox.innerHTML =
+"<p>No vehicle found.</p>";
+
+return;
+}
+
+
+vehiclesBox.innerHTML="";
+
+
+data.forEach(function(vehicle){
+
+const box =
+document.createElement("div");
+
+box.className="vehicle";
+
+box.innerHTML =
+"<strong>Vehicle:</strong> "+
+escapeHtml(vehicle.vehicle_number)+
+"<br><br>"+
+"<strong>Owner:</strong> "+
+escapeHtml(vehicle.owner_name)+
+"<br><br>"+
+"<strong>Status:</strong> "+
+escapeHtml(vehicle.status);
+
+
+const qrButton =
+document.createElement("button");
+
+qrButton.className="qr-button";
+
+qrButton.textContent="📱 Generate QR";
+
+
+qrButton.onclick=function(){
+
+generateQR(vehicle,box);
+
+};
+
+
+box.appendChild(qrButton);
+
+vehiclesBox.appendChild(box);
+
+});
 
 }
 
 
-/* VEHICLES */
+/* GENERATE QR */
 
-async function loadVehicles() {
+function generateQR(vehicle,box){
 
-  const { data, error } =
-    await supabaseClient
-      .from("vehicles")
-      .select(
-        "id, vehicle_number, owner_name, status, qr_token"
-      )
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
+if(!vehicle.qr_token){
+
+alert(
+"QR token is missing for this vehicle."
+);
+
+return;
+}
 
 
-  if (error) {
-
-    console.error(error);
-
-    vehiclesBox.innerHTML =
-      '<p class="error">Unable to load vehicle.</p>';
-
-    return;
-  }
+const baseUrl =
+"https://somendra050698-crypto.github.io/vehicle-owner-connect/";
 
 
-  if (!data || data.length === 0) {
-
-    vehiclesBox.innerHTML =
-      "<p>No vehicle found.</p>";
-
-    return;
-  }
+const qrUrl =
+baseUrl+
+"?token="+
+encodeURIComponent(vehicle.qr_token);
 
 
-  vehiclesBox.innerHTML = "";
+const oldQR =
+box.querySelector(".qr-box");
 
+if(oldQR){
 
-  data.forEach(
-    function (vehicle) {
-
-      const box =
-        document.createElement("div");
-
-      box.className =
-        "vehicle";
-
-
-      box.innerHTML =
-        "<strong>Vehicle:</strong> " +
-        escapeHtml(vehicle.vehicle_number) +
-        "<br><br>" +
-        "<strong>Owner:</strong> " +
-        escapeHtml(vehicle.owner_name) +
-        "<br><br>" +
-        "<strong>Status:</strong> " +
-        escapeHtml(vehicle.status);
-
-
-      const qrButton =
-        document.createElement("button");
-
-      qrButton.className =
-        "qr-button";
-
-      qrButton.textContent =
-        "📱 Generate QR";
-
-
-      qrButton.addEventListener(
-        "click",
-        function () {
-
-          generateVehicleQR(
-            vehicle,
-            box
-          );
-
-        }
-      );
-
-
-      box.appendChild(qrButton);
-
-      vehiclesBox.appendChild(box);
-
-    }
-  );
+oldQR.remove();
 
 }
 
 
-/* QR GENERATION */
+const qrBox =
+document.createElement("div");
 
-async function generateVehicleQR(
-  vehicle,
-  box
-) {
-
-  let token =
-    vehicle.qr_token;
+qrBox.className="qr-box";
 
 
-  /*
-   * Existing token use karo.
-   * Agar token missing hai to UUID create karo.
-   */
-
-  if (!token) {
-
-    token =
-      crypto.randomUUID();
-
-
-    const { error } =
-      await supabaseClient
-        .from("vehicles")
-        .update({
-          qr_token: token
-        })
-        .eq(
-          "id",
-          vehicle.id
-        );
+qrBox.innerHTML =
+"<h3>🚗 "+
+escapeHtml(vehicle.vehicle_number)+
+"</h3>"+
+'<img class="qr-image" alt="Vehicle QR">'+
+'<div class="qr-url">'+
+escapeHtml(qrUrl)+
+"</div>";
 
 
-    if (error) {
-
-      console.error(error);
-
-      alert(
-        "QR token save nahi ho saka. Supabase permission/RLS check karein."
-      );
-
-      return;
-    }
-
-  }
+const image =
+qrBox.querySelector(".qr-image");
 
 
-  /*
-   * IMPORTANT:
-   * GitHub Pages live website ka exact URL.
-   */
-
-  const baseUrl =
-    window.location.origin +
-    window.location.pathname
-      .replace(
-        "dashboard.html",
-        ""
-      );
+image.src =
+"https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="+
+encodeURIComponent(qrUrl);
 
 
-  const qrUrl =
-    baseUrl +
-    "?token=" +
-    encodeURIComponent(token);
+const download =
+document.createElement("button");
+
+download.className="qr-button";
+
+download.textContent="⬇️ Download QR";
 
 
-  const qrBox =
-    document.createElement("div");
+download.onclick=function(){
 
-  qrBox.className =
-    "qr-box";
+const link =
+document.createElement("a");
 
+link.href=image.src;
 
-  qrBox.innerHTML =
+link.target="_blank";
 
-    "<h3>🚗 " +
-    escapeHtml(
-      vehicle.vehicle_number
-    ) +
-    "</h3>" +
+link.download=
+"vehicle-"+vehicle.vehicle_number+"-QR.png";
 
-    '<img class="qr-image" ' +
-    'alt="Vehicle QR Code">' +
+link.click();
 
-    '<div class="qr-url">' +
-    escapeHtml(qrUrl) +
-    "</div>";
+};
 
 
-  const qrImage =
-    qrBox.querySelector(
-      ".qr-image"
-    );
+const print =
+document.createElement("button");
+
+print.className="print-button";
+
+print.textContent="🖨️ Print QR";
 
 
-  /*
-   * QR image generated using QR Server API.
-   */
+print.onclick=function(){
 
-  qrImage.src =
-    "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
-    encodeURIComponent(qrUrl);
+const win =
+window.open("","_blank");
 
+win.document.write(
+"<html><body style='text-align:center;font-family:Arial'>"+
+"<h2>Vehicle Owner Connect</h2>"+
+"<h3>"+
+escapeHtml(vehicle.vehicle_number)+
+"</h3>"+
+"<img src='"+image.src+"' style='width:400px'>"+
+"<p style='font-size:12px;word-break:break-all'>"+
+escapeHtml(qrUrl)+
+"</p>"+
+"</body></html>"
+);
 
-  const downloadButton =
-    document.createElement("button");
+win.document.close();
 
-  downloadButton.className =
-    "qr-button";
+win.focus();
 
-  downloadButton.textContent =
-    "⬇️ Download QR";
+setTimeout(
+function(){
+win.print();
+},
+500
+);
 
-
-  downloadButton.addEventListener(
-    "click",
-    function () {
-
-      downloadQR(
-        qrImage.src,
-        vehicle.vehicle_number
-      );
-
-    }
-  );
-
-
-  const printButton =
-    document.createElement("button");
-
-  printButton.className =
-    "print-button";
-
-  printButton.textContent =
-    "🖨️ Print QR";
+};
 
 
-  printButton.addEventListener(
-    "click",
-    function () {
+qrBox.appendChild(download);
 
-      printQR(
-        qrImage.src,
-        vehicle.vehicle_number,
-        qrUrl
-      );
+qrBox.appendChild(print);
 
-    }
-  );
-
-
-  qrBox.appendChild(
-    downloadButton
-  );
-
-  qrBox.appendChild(
-    printButton
-  );
-
-
-  /*
-   * Remove previous QR box.
-   */
-
-  const oldQR =
-    box.querySelector(
-      ".qr-box"
-    );
-
-  if (oldQR) {
-    oldQR.remove();
-  }
-
-
-  box.appendChild(qrBox);
+box.appendChild(qrBox);
 
 }
 
 
-/* DOWNLOAD QR */
+/* LOAD MESSAGES */
 
-async function downloadQR(
-  imageUrl,
-  vehicleNumber
-) {
+async function loadMessages(){
 
-  try {
-
-    const response =
-      await fetch(imageUrl);
-
-    const blob =
-      await response.blob();
-
-    const blobUrl =
-      URL.createObjectURL(blob);
-
-
-    const link =
-      document.createElement("a");
-
-    link.href =
-      blobUrl;
-
-    link.download =
-      "vehicle-qr-" +
-      vehicleNumber +
-      ".png";
+const {data,error} =
+await supabaseClient
+.from("vehicle_messages")
+.select(`
+id,
+vehicle_id,
+sender_name,
+sender_contact,
+message,
+status,
+created_at,
+vehicles(
+vehicle_number
+)
+`)
+.order(
+"created_at",
+{ascending:false}
+);
 
 
-    document.body.appendChild(
-      link
-    );
+if(error){
 
-    link.click();
+console.error(error);
 
-    link.remove();
+messagesBox.innerHTML =
+'<p class="error">Unable to load messages.</p>';
 
-    URL.revokeObjectURL(
-      blobUrl
-    );
+return;
+}
 
-  } catch (error) {
 
-    console.error(error);
+if(!data || data.length===0){
 
-    /*
-     * Fallback:
-     * QR image ko new tab me open karo.
-     */
+messagesBox.innerHTML =
+"<p>No messages received yet.</p>";
 
-    window.open(
-      imageUrl,
-      "_blank"
-    );
+return;
+}
 
-  }
+
+messagesBox.innerHTML="";
+
+
+data.forEach(function(item){
+
+const div =
+document.createElement("div");
+
+
+const status =
+item.status || "new";
+
+
+div.className =
+"message "+
+(
+status==="read"
+?"read"
+:"new"
+);
+
+
+const vehicle =
+item.vehicles
+?item.vehicles.vehicle_number
+:"Vehicle";
+
+
+const statusButton =
+status==="read"
+
+?'<button class="status-button read-button" disabled>✓ Read</button>'
+
+:'<button class="status-button" data-message-id="'+
+escapeHtml(item.id)+
+'">Mark as Read</button>';
+
+
+div.innerHTML =
+
+"<strong>🚗 "+
+escapeHtml(vehicle)+
+"</strong>"+
+
+'<div class="meta">From: '+
+escapeHtml(
+item.sender_name || "Unknown"
+)+
+"</div>"+
+
+'<div class="meta">Contact: '+
+escapeHtml(
+item.sender_contact || "Not provided"
+)+
+"</div>"+
+
+'<div class="meta">'+
+new Date(
+item.created_at
+).toLocaleString()+
+"</div>"+
+
+'<div class="message-text">'+
+escapeHtml(item.message)+
+"</div>"+
+
+statusButton;
+
+
+const button =
+div.querySelector(
+".status-button"
+);
+
+
+if(
+button &&
+status!=="read"
+){
+
+button.addEventListener(
+"click",
+function(){
+
+markAsRead(
+item.id,
+button
+);
+
+});
 
 }
 
 
-/* PRINT QR */
+messagesBox.appendChild(div);
 
-function printQR(
-  imageUrl,
-  vehicleNumber,
-  qrUrl
-) {
-
-  const printWindow =
-    window.open(
-      "",
-      "_blank"
-    );
-
-
-  if (!printWindow) {
-
-    alert(
-      "Please allow pop-ups to print the QR."
-    );
-
-    return;
-  }
-
-
-  printWindow.document.write(
-    "<html>" +
-    "<head>" +
-    "<title>Vehicle QR - " +
-    escapeHtml(vehicleNumber) +
-    "</title>" +
-    "<style>" +
-    "body{text-align:center;font-family:Arial;padding:30px;}" +
-    "img{width:400px;max-width:90%;}" +
-    ".url{font-size:12px;word-break:break-all;margin-top:15px;}" +
-    "</style>" +
-    "</head>" +
-    "<body>" +
-    "<h2>Vehicle Owner Connect</h2>" +
-    "<h3>" +
-    escapeHtml(vehicleNumber) +
-    "</h3>" +
-    '<img src="' +
-    imageUrl +
-    '">' +
-    '<div class="url">' +
-    escapeHtml(qrUrl) +
-    "</div>" +
-    "</body>" +
-    "</html>"
-  );
-
-
-  printWindow.document.close();
-
-  printWindow.focus();
-
-  setTimeout(
-    function () {
-
-      printWindow.print();
-
-    },
-    500
-  );
+});
 
 }
 
 
-/* MESSAGES */
-
-async function loadMessages() {
-
-  const { data, error } =
-    await supabaseClient
-      .from("vehicle_messages")
-      .select(`
-        id,
-        vehicle_id,
-        sender_name,
-        sender_contact,
-        message,
-        status,
-        created_at,
-        vehicles (
-          vehicle_number
-        )
-      `)
-      .order(
-        "created_at",
-        {
-          ascending: false
-        }
-      );
-
-
-  if (error) {
-
-    console.error(error);
-
-    messagesBox.innerHTML =
-      '<p class="error">Unable to load messages.</p>';
-
-    return;
-  }
-
-
-  if (!data || data.length === 0) {
-
-    messagesBox.innerHTML =
-      "<p>No messages received yet.</p>";
-
-    return;
-  }
-
-
-  messagesBox.innerHTML = "";
-
-
-  data.forEach(
-    function (item) {
-
-      const div =
-        document.createElement("div");
-
-
-      const status =
-        item.status || "new";
-
-
-      div.className =
-        "message " +
-        (
-          status === "read"
-            ? "read"
-            : "new"
-        );
-
-
-      const vehicle =
-        item.vehicles
-          ? item.vehicles.vehicle_number
-          : "Vehicle";
-
-
-      div.innerHTML =
-
-        "<strong>🚗 " +
-        escapeHtml(vehicle) +
-        "</strong>" +
-
-        '<div class="meta">From: ' +
-        escapeHtml(
-          item.sender_name || "Unknown"
-        ) +
-        "</div>" +
-
-        '<div class="meta">Contact: ' +
-        escapeHtml(
-          item.sender_contact || "Not provided"
-        ) +
-        "</div>" +
-
-        '<div class="meta">' +
-        new Date(
-          item.created_at
-        ).toLocaleString() +
-        "</div>" +
-
-        '<div class="message-text">' +
-        escapeHtml(item.message) +
-        "</div>" +
-
-        '<button class="status-button" ' +
-        'onclick="markAsRead(\'' +
-        item.id +
-        '\')">' +
-        "Mark as Read" +
-        "</button>";
-
-
-      messagesBox.appendChild(div);
-
-    }
-  );
-
-}
-
-
-/* MARK READ */
+/* MARK AS READ */
 
 async function markAsRead(
-  messageId
-) {
+messageId,
+button
+){
 
-  const { error } =
-    await supabaseClient
-      .from("vehicle_messages")
-      .update({
-        status: "read"
-      })
-      .eq(
-        "id",
-        messageId
-      );
+button.disabled=true;
+
+button.textContent="Updating...";
 
 
-  if (error) {
+const {error} =
+await supabaseClient
+.from("vehicle_messages")
+.update({
+status:"read"
+})
+.eq(
+"id",
+messageId
+);
 
-    console.error(error);
 
-    alert(
-      "Unable to update message."
-    );
+if(error){
 
-    return;
-  }
+console.error(error);
+
+button.disabled=false;
+
+button.textContent="Mark as Read";
+
+alert(
+"Unable to update message."
+);
+
+return;
+}
 
 
-  await loadMessages();
+/*
+Reload messages so UI
+immediately changes to ✓ Read.
+*/
+
+await loadMessages();
 
 }
 
@@ -915,53 +757,48 @@ async function markAsRead(
 /* LOGOUT */
 
 logoutButton.addEventListener(
-  "click",
-  async function () {
+"click",
+async function(){
 
-    await supabaseClient.auth.signOut();
+await supabaseClient.auth.signOut();
 
-    dashboard.classList.add(
-      "hidden"
-    );
+dashboard.classList.add("hidden");
 
-    loginCard.classList.remove(
-      "hidden"
-    );
+loginCard.classList.remove("hidden");
 
-  }
-);
+});
 
 
 /* SESSION */
 
-async function checkSession() {
+async function checkSession(){
 
-  const { data } =
-    await supabaseClient.auth.getSession();
+const {data} =
+await supabaseClient.auth.getSession();
 
 
-  if (
-    data &&
-    data.session
-  ) {
+if(
+data &&
+data.session
+){
 
-    await showDashboard();
+await showDashboard();
 
-  }
+}
 
 }
 
 
 /* ESCAPE HTML */
 
-function escapeHtml(value) {
+function escapeHtml(value){
 
-  return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+return String(value)
+.replaceAll("&","&amp;")
+.replaceAll("<","&lt;")
+.replaceAll(">","&gt;")
+.replaceAll('"',"&quot;")
+.replaceAll("'","&#039;");
 
 }
 
