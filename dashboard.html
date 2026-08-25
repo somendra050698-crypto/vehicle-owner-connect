@@ -143,6 +143,9 @@ button:disabled{
   font-size:12px;
   color:#667085;
   word-break:break-all;
+  background:#f2f4f7;
+  padding:10px;
+  border-radius:8px;
 }
 
 .print-button{
@@ -154,8 +157,6 @@ button:disabled{
 <body>
 
 <div class="container">
-
-<!-- LOGIN -->
 
 <div id="loginCard" class="card">
 
@@ -185,8 +186,6 @@ Login
 </div>
 
 
-<!-- DASHBOARD -->
-
 <div id="dashboard" class="hidden">
 
 <div class="card">
@@ -199,9 +198,7 @@ Logout
 
 <h1>📬 Owner Dashboard</h1>
 
-<p>
-Welcome, Somendra Singh
-</p>
+<p>Welcome, Somendra Singh</p>
 
 <div id="vehicles">
 Loading vehicle...
@@ -317,6 +314,8 @@ loginButton.textContent="Login";
 
 return;
 }
+
+loginStatus.className="";
 
 loginStatus.textContent="";
 
@@ -439,23 +438,40 @@ return;
 }
 
 
+/*
+IMPORTANT:
+QR points directly to index.html
+and sends the vehicle token.
+*/
+
 const baseUrl =
-"https://somendra050698-crypto.github.io/vehicle-owner-connect/";
+"https://somendra050698-crypto.github.io/vehicle-owner-connect/index.html";
+
+
+const token =
+String(vehicle.qr_token).trim();
 
 
 const qrUrl =
 baseUrl+
 "?token="+
-encodeURIComponent(vehicle.qr_token);
+encodeURIComponent(token);
+
+
+/* DEBUG */
+
+console.log("Vehicle:",vehicle.vehicle_number);
+
+console.log("QR Token:",token);
+
+console.log("QR URL:",qrUrl);
 
 
 const oldQR =
 box.querySelector(".qr-box");
 
 if(oldQR){
-
 oldQR.remove();
-
 }
 
 
@@ -469,7 +485,9 @@ qrBox.innerHTML =
 "<h3>🚗 "+
 escapeHtml(vehicle.vehicle_number)+
 "</h3>"+
-'<img class="qr-image" alt="Vehicle QR">'+
+
+'<img class="qr-image" alt="Vehicle QR Code">'+
+
 '<div class="qr-url">'+
 escapeHtml(qrUrl)+
 "</div>";
@@ -483,6 +501,8 @@ image.src =
 "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data="+
 encodeURIComponent(qrUrl);
 
+
+/* DOWNLOAD */
 
 const download =
 document.createElement("button");
@@ -502,12 +522,20 @@ link.href=image.src;
 link.target="_blank";
 
 link.download=
-"vehicle-"+vehicle.vehicle_number+"-QR.png";
+"vehicle-"+
+vehicle.vehicle_number+
+"-QR.png";
+
+document.body.appendChild(link);
 
 link.click();
 
+link.remove();
+
 };
 
+
+/* PRINT */
 
 const print =
 document.createElement("button");
@@ -522,17 +550,42 @@ print.onclick=function(){
 const win =
 window.open("","_blank");
 
+if(!win){
+
+alert(
+"Please allow pop-ups to print the QR."
+);
+
+return;
+}
+
+
 win.document.write(
-"<html><body style='text-align:center;font-family:Arial'>"+
+
+"<html>"+
+"<head>"+
+"<title>Vehicle QR</title>"+
+"</head>"+
+
+"<body style='text-align:center;font-family:Arial'>"+
+
 "<h2>Vehicle Owner Connect</h2>"+
+
 "<h3>"+
 escapeHtml(vehicle.vehicle_number)+
 "</h3>"+
-"<img src='"+image.src+"' style='width:400px'>"+
+
+"<img src='"+
+image.src+
+"' style='width:400px;max-width:90%'>"+
+
 "<p style='font-size:12px;word-break:break-all'>"+
 escapeHtml(qrUrl)+
 "</p>"+
-"</body></html>"
+
+"</body>"+
+"</html>"
+
 );
 
 win.document.close();
@@ -543,7 +596,7 @@ setTimeout(
 function(){
 win.print();
 },
-500
+700
 );
 
 };
@@ -631,16 +684,6 @@ item.vehicles
 :"Vehicle";
 
 
-const statusButton =
-status==="read"
-
-?'<button class="status-button read-button" disabled>✓ Read</button>'
-
-:'<button class="status-button" data-message-id="'+
-escapeHtml(item.id)+
-'">Mark as Read</button>';
-
-
 div.innerHTML =
 
 "<strong>🚗 "+
@@ -667,21 +710,27 @@ item.created_at
 
 '<div class="message-text">'+
 escapeHtml(item.message)+
-"</div>"+
-
-statusButton;
+"</div>";
 
 
 const button =
-div.querySelector(
-".status-button"
-);
+document.createElement("button");
 
 
-if(
-button &&
-status!=="read"
-){
+button.className="status-button";
+
+
+if(status==="read"){
+
+button.classList.add("read-button");
+
+button.disabled=true;
+
+button.textContent="✓ Read";
+
+}else{
+
+button.textContent="Mark as Read";
 
 button.addEventListener(
 "click",
@@ -696,6 +745,8 @@ button
 
 }
 
+
+div.appendChild(button);
 
 messagesBox.appendChild(div);
 
@@ -744,10 +795,10 @@ return;
 }
 
 
-/*
-Reload messages so UI
-immediately changes to ✓ Read.
-*/
+button.classList.add("read-button");
+
+button.textContent="✓ Read";
+
 
 await loadMessages();
 
@@ -793,7 +844,7 @@ await showDashboard();
 
 function escapeHtml(value){
 
-return String(value)
+return String(value ?? "")
 .replaceAll("&","&amp;")
 .replaceAll("<","&lt;")
 .replaceAll(">","&gt;")
@@ -802,6 +853,8 @@ return String(value)
 
 }
 
+
+/* START */
 
 checkSession();
 
