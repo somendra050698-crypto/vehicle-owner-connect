@@ -112,6 +112,38 @@
     .status-button {
       margin-top: 14px;
     }
+
+    .qr-box {
+      margin-top: 18px;
+      padding: 18px;
+      background: white;
+      border: 1px solid #e4e7ec;
+      border-radius: 14px;
+      text-align: center;
+    }
+
+    .qr-image {
+      width: 220px;
+      max-width: 100%;
+      height: auto;
+      margin: 15px auto;
+      display: block;
+    }
+
+    .qr-url {
+      font-size: 12px;
+      color: #667085;
+      word-break: break-all;
+      margin-top: 10px;
+    }
+
+    .qr-button {
+      background: #067647;
+    }
+
+    .print-button {
+      background: #344054;
+    }
   </style>
 </head>
 
@@ -291,6 +323,12 @@ loginButton.addEventListener(
 
     loginStatus.textContent = "";
 
+    loginButton.disabled =
+      false;
+
+    loginButton.textContent =
+      "Login";
+
     await showDashboard();
 
   }
@@ -320,7 +358,7 @@ async function loadVehicles() {
     await supabaseClient
       .from("vehicles")
       .select(
-        "id, vehicle_number, owner_name, status"
+        "id, vehicle_number, owner_name, status, qr_token"
       )
       .order(
         "created_at",
@@ -374,9 +412,346 @@ async function loadVehicles() {
         escapeHtml(vehicle.status);
 
 
+      const qrButton =
+        document.createElement("button");
+
+      qrButton.className =
+        "qr-button";
+
+      qrButton.textContent =
+        "📱 Generate QR";
+
+
+      qrButton.addEventListener(
+        "click",
+        function () {
+
+          generateVehicleQR(
+            vehicle,
+            box
+          );
+
+        }
+      );
+
+
+      box.appendChild(qrButton);
+
       vehiclesBox.appendChild(box);
 
     }
+  );
+
+}
+
+
+/* QR GENERATION */
+
+async function generateVehicleQR(
+  vehicle,
+  box
+) {
+
+  let token =
+    vehicle.qr_token;
+
+
+  /*
+   * Existing token use karo.
+   * Agar token missing hai to UUID create karo.
+   */
+
+  if (!token) {
+
+    token =
+      crypto.randomUUID();
+
+
+    const { error } =
+      await supabaseClient
+        .from("vehicles")
+        .update({
+          qr_token: token
+        })
+        .eq(
+          "id",
+          vehicle.id
+        );
+
+
+    if (error) {
+
+      console.error(error);
+
+      alert(
+        "QR token save nahi ho saka. Supabase permission/RLS check karein."
+      );
+
+      return;
+    }
+
+  }
+
+
+  /*
+   * IMPORTANT:
+   * GitHub Pages live website ka exact URL.
+   */
+
+  const baseUrl =
+    window.location.origin +
+    window.location.pathname
+      .replace(
+        "dashboard.html",
+        ""
+      );
+
+
+  const qrUrl =
+    baseUrl +
+    "?token=" +
+    encodeURIComponent(token);
+
+
+  const qrBox =
+    document.createElement("div");
+
+  qrBox.className =
+    "qr-box";
+
+
+  qrBox.innerHTML =
+
+    "<h3>🚗 " +
+    escapeHtml(
+      vehicle.vehicle_number
+    ) +
+    "</h3>" +
+
+    '<img class="qr-image" ' +
+    'alt="Vehicle QR Code">' +
+
+    '<div class="qr-url">' +
+    escapeHtml(qrUrl) +
+    "</div>";
+
+
+  const qrImage =
+    qrBox.querySelector(
+      ".qr-image"
+    );
+
+
+  /*
+   * QR image generated using QR Server API.
+   */
+
+  qrImage.src =
+    "https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=" +
+    encodeURIComponent(qrUrl);
+
+
+  const downloadButton =
+    document.createElement("button");
+
+  downloadButton.className =
+    "qr-button";
+
+  downloadButton.textContent =
+    "⬇️ Download QR";
+
+
+  downloadButton.addEventListener(
+    "click",
+    function () {
+
+      downloadQR(
+        qrImage.src,
+        vehicle.vehicle_number
+      );
+
+    }
+  );
+
+
+  const printButton =
+    document.createElement("button");
+
+  printButton.className =
+    "print-button";
+
+  printButton.textContent =
+    "🖨️ Print QR";
+
+
+  printButton.addEventListener(
+    "click",
+    function () {
+
+      printQR(
+        qrImage.src,
+        vehicle.vehicle_number,
+        qrUrl
+      );
+
+    }
+  );
+
+
+  qrBox.appendChild(
+    downloadButton
+  );
+
+  qrBox.appendChild(
+    printButton
+  );
+
+
+  /*
+   * Remove previous QR box.
+   */
+
+  const oldQR =
+    box.querySelector(
+      ".qr-box"
+    );
+
+  if (oldQR) {
+    oldQR.remove();
+  }
+
+
+  box.appendChild(qrBox);
+
+}
+
+
+/* DOWNLOAD QR */
+
+async function downloadQR(
+  imageUrl,
+  vehicleNumber
+) {
+
+  try {
+
+    const response =
+      await fetch(imageUrl);
+
+    const blob =
+      await response.blob();
+
+    const blobUrl =
+      URL.createObjectURL(blob);
+
+
+    const link =
+      document.createElement("a");
+
+    link.href =
+      blobUrl;
+
+    link.download =
+      "vehicle-qr-" +
+      vehicleNumber +
+      ".png";
+
+
+    document.body.appendChild(
+      link
+    );
+
+    link.click();
+
+    link.remove();
+
+    URL.revokeObjectURL(
+      blobUrl
+    );
+
+  } catch (error) {
+
+    console.error(error);
+
+    /*
+     * Fallback:
+     * QR image ko new tab me open karo.
+     */
+
+    window.open(
+      imageUrl,
+      "_blank"
+    );
+
+  }
+
+}
+
+
+/* PRINT QR */
+
+function printQR(
+  imageUrl,
+  vehicleNumber,
+  qrUrl
+) {
+
+  const printWindow =
+    window.open(
+      "",
+      "_blank"
+    );
+
+
+  if (!printWindow) {
+
+    alert(
+      "Please allow pop-ups to print the QR."
+    );
+
+    return;
+  }
+
+
+  printWindow.document.write(
+    "<html>" +
+    "<head>" +
+    "<title>Vehicle QR - " +
+    escapeHtml(vehicleNumber) +
+    "</title>" +
+    "<style>" +
+    "body{text-align:center;font-family:Arial;padding:30px;}" +
+    "img{width:400px;max-width:90%;}" +
+    ".url{font-size:12px;word-break:break-all;margin-top:15px;}" +
+    "</style>" +
+    "</head>" +
+    "<body>" +
+    "<h2>Vehicle Owner Connect</h2>" +
+    "<h3>" +
+    escapeHtml(vehicleNumber) +
+    "</h3>" +
+    '<img src="' +
+    imageUrl +
+    '">' +
+    '<div class="url">' +
+    escapeHtml(qrUrl) +
+    "</div>" +
+    "</body>" +
+    "</html>"
+  );
+
+
+  printWindow.document.close();
+
+  printWindow.focus();
+
+  setTimeout(
+    function () {
+
+      printWindow.print();
+
+    },
+    500
   );
 
 }
